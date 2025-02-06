@@ -1,10 +1,39 @@
+---
+title: 'Analyzing COVID-19 Data'
+author: "Justin Mende"
+date: "6/2/2025"
+output: html_document
+---
+
+# Using R to Analyze COVID-19 Data
+This .Rmd file, as well as the R file found in the same folder,
+contain the same overall R code. However, this file was created
+to gain experience using and written .Rmd files. It takes in a 
+csv file of COVID-19 Data, such as positive cases, tests, and deaths.
+
+Topics used in this file include:
+- Reading csv Files 
+- Data Frames
+- Using the dplyr package
+- Filtering and summarizing Data
+- Creating plots using plotly and ggplot2
+- Creating matrices
+
+The csv file used in this file was retrieved from the following link:
+<https://www.kaggle.com/datasets/lin0li/covid19testing?resource=download>
+
+First, the necessary libraries were listed.
+```{r}
 # Libraries and packages that will be used
 library(dplyr)
 library(tibble)
 
 library(ggplot2)
 library(plotly)
+```
 
+Next, the csv file was donwload and stored. It was read in as a data frame.
+```{r}
 # Get csv data
 csv_name <- "analyzing_covid_trends\\tested_worldwide.csv"
 
@@ -12,11 +41,17 @@ covid_data <- read.csv(csv_name)
 
 # Display the head and tail of the data
 head(covid_data)
-tail(covid_data)
+```
 
+A summary table of the data was also created.
+```{r}
 # Show summary table of data
 summary(covid_data)
+```
 
+Another number of different functions were used to gain exposure into how they
+work and to get key dimensions and features of the data frame.
+```{r}
 # List the column names
 colnames(covid_data)
 
@@ -34,7 +69,12 @@ dim(covid_data)
 nrow(covid_data)
 ncol(covid_data)
 str(covid_data)
+```
 
+The data was then filtered to only get rows involving the entire country. 
+Additionally, the names of hte column were changed, and the NA values were
+replaced with 0.
+```{r}
 # Filter data to only get rows where it involves the entire country
 country_covid_data <- covid_data %>% filter(Province_State == "All States")
 
@@ -52,23 +92,38 @@ colnames(country_covid_data) <- c("Date", "Country", "Positve", "Active",
 # Replace NA values with 0
 country_covid_data <- country_covid_data %>% replace(is.na(.), 0)
 head(country_covid_data)
+```
 
+The data for only Canada was retrieved from the original data frame to be used 
+to create different types of graphs.
+```{r}
 # Filter data to only get the data for Canada
 canada_data <- country_covid_data %>% filter(Country == "Canada")
 canada_data <- canada_data %>% select(-Country)
 canada_data$Date <- as.Date(canada_data$Date)
 
 glimpse(canada_data)
+```
 
+First, the plot() function was used to create a line graph of daily positive cases
+by date.
+```{r}
 # Create line graph of daily cases by date
 plot(canada_data$Date, canada_data$Daily_Positive, type = "l", lwd = 2,
      main = "Graph of Canada Daily Positive COVID Cases", xlab = "Date",
      ylab = "Number of Cases")
+```
 
+Next, using the filtered Canada Data, a ggplot2 line graph was created to display 
+active cases by day.
+```{r}
 # Use ggplot2 to create line graph of active cases by day
 ggplot(canada_data, aes(x = Date, y = Active)) + geom_point(color = "blue") +
   labs(title = "Canada: Active COVID-19 Cases")
+```
 
+Lastly, a plotly bar graph was created by show deaths by day.
+```{r}
 # Create bar graph of deaths by day using plotly
 canada_bar_graph <- plot_ly(canada_data, x = ~Date, y = ~Death, type = "bar",
                             marker = list(color = "red"))
@@ -77,7 +132,11 @@ canada_bar_graph <- canada_bar_graph %>% layout(title = "Canada COVID Deaths",
                                                 bargrap = 0.2)
 
 canada_bar_graph
+```
 
+The data was furthered summarized by total cases, tests, and hospitalizations by
+country.
+```{r}
 # Summarize data by total tests, cases, hospitalizations by country
 country_daily_summary <- country_covid_data %>%
   group_by(Country) %>%
@@ -86,7 +145,11 @@ country_daily_summary <- country_covid_data %>%
 
 country_daily_summary <- country_daily_summary %>% arrange((desc(Positive)))
 country_daily_summary
+```
 
+Afterwards, to complete the analysis, the top three countries by total positive cases,
+tests, hospitalizations and positive test rate were determined and stored in a matrix.
+```{r}
 # Get top three countries by positive cases
 most_positive <- country_daily_summary
 most_positive <- head(most_positive, 3)
@@ -120,3 +183,4 @@ highest_rate_countries
 covid_leaders <- rbind(top_positive_countries, top_tested_countries,
                        top_hospitalized_countries, highest_rate_countries)
 covid_leaders
+```
