@@ -35,7 +35,7 @@ library(plotly)
 Next, the csv file was donwload and stored. It was read in as a data frame.
 ```{r}
 # Get csv data
-csv_name <- "analyzing_covid_trends\\tested_worldwide.csv"
+csv_name <- "tested_worldwide.csv"
 
 covid_data <- read.csv(csv_name)
 
