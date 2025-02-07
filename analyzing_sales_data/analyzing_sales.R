@@ -3,6 +3,8 @@ library(dplyr)
 library(tidyr)
 
 # Read in csv file
+# Note: data set was retrieved from project 3 from the following link
+# Note: https://www.dataquest.io/blog/r-projects-for-beginners-with-source-code/
 book_data <- read.csv("analyzing_sales_data//sales_data.csv")
 head(book_data)
 
